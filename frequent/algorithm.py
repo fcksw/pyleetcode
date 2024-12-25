@@ -38,7 +38,6 @@ class Solution:
         return prev
 
 # 两数之和
-class Solution:
     def twoSum(self, nums, target: int):
         dic = {}
         for i, num in enumerate(nums):
@@ -49,7 +48,6 @@ class Solution:
 # 盛水最多的容器
 # 找出其中的两条线，使得它们与 x 轴共同构成的容器可以容纳最多的水。
 # 返回容器可以储存的最大水量。
-class Solution:
     def maxArea(self, height: List[int]) -> int:
         l, r = 0, len(height) - 1
         maxCap = 0
@@ -65,7 +63,29 @@ class Solution:
 #给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]]
 # 满足 i != j、i != k 且 j != k ，同时还满足 nums[i] + nums[j] + nums[k] == 0 。
 # 请你返回所有和为 0 且不重复的三元组。
-class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
-        for i, num in enumerate(nums):
-
+        # TODO 优先排序
+        nums = sorted(nums)
+        res = []
+        i, max_len = 0, len(nums) - 1
+        while i <= max_len - 2:
+            if i > 0 and nums[i] == nums[i - 1]:
+                i += 1
+                continue
+            l, r = i + 1, len(nums) - 1
+            while l < r:
+                sum_num = nums[i] + nums[l] + nums[r]
+                if sum_num > 0:
+                    r -= 1
+                elif sum_num < 0:
+                    l += 1
+                else:
+                    res.append([nums[i], nums[l], nums[r]])
+                    while l < r and l < max_len and nums[l] == nums[l + 1]:
+                        l += 1
+                    while r > l and r > i and nums[r] == nums[r - 1]:
+                        r -= 1
+                    r -= 1
+                    l += 1
+            i += 1
+        return res
