@@ -50,14 +50,14 @@ class Solution:
 # 返回容器可以储存的最大水量。
     def maxArea(self, height: List[int]) -> int:
         l, r = 0, len(height) - 1
-        maxCap = 0
+        max_cap = 0
         while l < r:
-            maxCap = max((r - l) * min(height[l], height[r]), maxCap)
+            max_cap = max((r - l) * min(height[l], height[r]), max_cap)
             if height[l] < height[r]:
                 l += 1
             else:
                 r -= 1
-        return
+        return max_cap
 
 # 三数之和
 #给你一个整数数组 nums ，判断是否存在三元组 [nums[i], nums[j], nums[k]]
