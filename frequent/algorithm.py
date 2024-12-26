@@ -89,3 +89,69 @@ class Solution:
                     l += 1
             i += 1
         return res
+
+# 接雨水
+    def trap(self, height: List[int]) -> int:
+        ans, l, r  = 0, 0, len(height) - 1
+        l_max, r_max = 0, 0
+        while l < r:
+            l_max = max(height[l], l_max)
+            r_max = max(height[r], r_max)
+            if height[l] < height[r]:
+                ans += l_max - height[l]
+                l += 1
+            else:
+                ans += r_max - height[r]
+                r -= 1
+        return ans
+
+# 3. 无重复字符的最长子串
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        dict_s = {}
+        l, r, max_len = 0, 0, 0
+        while r < len(s):
+            if s[r] in dict_s and dict_s[s[r]] >= l:
+                l = dict_s[s[r]] + 1
+            max_len = max(r - l + 1, max_len)
+            dict_s[s[r]] = r
+            r += 1
+
+        return max_len
+
+# 53. 最大子数组和
+    def maxSubArray(self, nums: List[int]) -> int:
+        max_num, pre = nums[0], nums[0]
+        i = 1
+        while i < len(nums):
+            pre = max(nums[i], pre + nums[i])
+            max_num = max(pre, max_num)
+            i += 1
+        return max_num
+
+# 56. 合并区间
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        intervals.sort(key=lambda x: x[0])
+        if len(intervals) == 1:
+            return intervals
+        base_interval, ans = intervals[0], []
+        i = 1
+        while i < len(intervals):
+            interval = intervals[i]
+            if base_interval[1] < interval[0]:
+                ans.append(base_interval)
+                base_interval = interval
+            else:
+                base_interval[1] = max(base_interval[1], interval[1])
+            i += 1
+        ans.append(base_interval)
+        return ans
+
+dict_a = {1:"a", 3:"b", 19:"c", 4:"n", 6:"d"}
+dict_b = sorted(dict_a.items(), key = lambda kv: (kv[0], kv[1]), reverse=True)
+dict_c = sorted(dict_a.items(), key = lambda kv: [kv[0], kv[1]])
+print(dict_a)
+print(dict_b)
+print(dict_c)
+
+
+
