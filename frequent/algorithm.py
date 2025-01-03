@@ -1,4 +1,6 @@
 from typing import Optional,List
+import copy
+
 
 # k个一组链表反转
 
@@ -146,12 +148,202 @@ class Solution:
         ans.append(base_interval)
         return ans
 
-dict_a = {1:"a", 3:"b", 19:"c", 4:"n", 6:"d"}
-dict_b = sorted(dict_a.items(), key = lambda kv: (kv[0], kv[1]), reverse=True)
-dict_c = sorted(dict_a.items(), key = lambda kv: [kv[0], kv[1]])
-print(dict_a)
-print(dict_b)
-print(dict_c)
+
+# 189. 轮转数组
+#     输入: nums = [1, 2, 3, 4, 5, 6, 7], k = 3
+#     输出: [5, 6, 7, 1, 2, 3, 4]
+    def rotate(self, nums: List[int], k: int) -> None:
+        for _ in range(k):
+            num = nums.pop()
+            nums.insert(0, num)
+
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        # (0,0) (0, 1) (0,2)
+        # (2,0) (1,0) (0,0)
+        tmp = copy.deepcopy(matrix)
+        for i in range(len(matrix[0])):
+            for j in range(len(matrix)):
+                matrix[i][j] = tmp[len(matrix) - 1 - j][i]
+
+
+# 54. 螺旋矩阵
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        """  """
+        left, right, down, up = 0, len(matrix[0]) - 1, len(matrix) - 1, 0
+        ans = []
+        while True:
+            if left > right:
+                break
+            for i in range(left, right + 1):
+                ans.append(matrix[up][i])
+            up += 1
+
+            if up > down:
+                break
+            for i in range(up, down + 1):
+                ans.append(matrix[i][right])
+            right -= 1
+
+            if left > right:
+                break
+            for i in range(right, left - 1, -1):
+                ans.append(matrix[down][i])
+            down -= 1
+
+            if up > down:
+                break
+            for i in range(down, up - 1, -1):
+                ans.append(matrix[i][left])
+            left += 1
+        return ans
+
+# 160. 相交链表
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        dic = {}
+        while headA is not None:
+            dic[headA] = True
+            headA = headA.next
+
+        while headB is not None:
+            if headB in dic:
+                return headB
+            headB = headB.next
+        return None
+
+# 206. 反转链表
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prev = None
+        while head is not None:
+            next_node = head.next
+            head.next = prev
+            prev = head
+            head = next_node
+        return prev
+
+# 141. 环形链表
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        fast, slow = head, head
+        first = True
+        while fast is not None and fast.next is not None:
+            if slow == fast and not first:
+                return True
+            first = False
+            slow = slow.next
+            fast = fast.next.next
+        return False
+
+# 21. 合并两个有序链表
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        dum = ListNode()
+        res = dum
+        while list1 is not None and list2 is not None:
+            l1_val = list1.val
+            l2_val = list2.val
+            if l1_val > l2_val:
+                dum.next = ListNode(val=l2_val)
+                list2 = list2.next
+            else:
+                dum.next = ListNode(val=l1_val)
+                list1 = list1.next
+            dum = dum.next
+
+        if list1 is None:
+            dum.next = list2
+        else:
+            dum.next = list1
+        return res.next
+
+# 2. 两数相加
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        tmp, pre = 0, ListNode()
+        res = pre
+        while l1 is not None or l2 is not None:
+            l1_val, l2_val = 0, 0
+            if l1 is not None:
+                l1_val = l1.val
+                l1 = l1.next
+            if l2 is not None:
+                l2_val = l2.val
+                l2 = l2.next
+            val = l1_val + l2_val + tmp
+            tmp = int(val / 10)
+            pre.next = ListNode(val= val % 10)
+            pre = pre.next
+
+        if tmp != 0:
+            pre.next = ListNode(val = tmp)
+        return  res.next
+
+# 19. 删除链表的倒数第 N 个结点
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dum = ListNode(0, head)
+        fast, slow = dum, dum
+        for _ in range(n):
+            fast = fast.next
+
+        while fast.next is not None:
+            fast = fast.next
+            slow = slow.next
+        slow.next = slow.next.next
+        return dum.next
+
+# 24. 两两交换链表中的节点
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dum = ListNode(val=0, next=head)
+        pre, end = dum, dum
+        while end is not None:
+            for _ in range(2):
+                if end is None:
+                    return dum.next
+                end = end.next
+
+            if end is None:
+                return dum.next
+            next_node = end.next
+            start = pre.next
+            start.next = next_node
+            end.next = start
+            pre.next = end
+            pre, end = start, start
+        return dum.next
+
+# k个一组链表反转
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        dum = ListNode(val=0, next=head)
+        pre, end = dum, dum
+        while end is not None:
+            for _ in range(k):
+                if end is None:
+                    return dum.next
+                end = end.next
+            if end is None:
+                return dum.next
+            next_node = end.next
+            end.next = None
+            start = pre.next
+            pre.next = self.reverse(start)
+            start.next = next_node
+            pre, end = start, start
+
+        return dum.next
+
+    def reverse(self, start: Optional[ListNode]) -> Optional[ListNode]:
+        prev = None
+        while start is not None:
+            next_node = start.next
+            start.next = prev
+            prev = start
+            start = next_node
+        return prev
+
+
+if __name__ == '__main__':
+    for i in range(0, 3):
+        print(i)
+
 
 
 
