@@ -1,6 +1,8 @@
 from typing import Optional,List
 import copy
 
+from jedi.plugins.django import mapping
+
 
 # k个一组链表反转
 
@@ -340,10 +342,9 @@ class Solution:
         return prev
 
 
+
+
 if __name__ == '__main__':
-    for i in range(0, 3):
-        print(i)
-
-
+    print('Hello World')
 
 
