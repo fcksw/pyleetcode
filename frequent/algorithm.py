@@ -1,8 +1,6 @@
-from typing import Optional,List
+from typing import Optional,List, Dict
 import copy
-
-from jedi.plugins.django import mapping
-
+from math import inf
 
 # k个一组链表反转
 
@@ -341,10 +339,230 @@ class Solution:
             start = next_node
         return prev
 
+# 23. 合并 K 个升序链表
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if lists is None or len(lists) <= 1:
+            return lists
+        origin = lists[0]
+        for item in lists[1:]:
+            origin = self.mergeList(origin, item)
+        return origin
 
+    def mergeList(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        res = ListNode()
+        merge_list = res
+        while l1 is not None and l2 is not None:
+            l1_val = l1.val
+            l2_val = l2.val
+            if l1_val < l2_val:
+                merge_list.next = l1
+                l1 = l1.next
+            else:
+                merge_list.next = l2
+                l2 = l2.next
+            merge_list = merge_list.next
+        if l1 is None:
+            merge_list.next = l2
+        else:
+            merge_list.next = l1
+        return  res.next
+
+# 25. K 个一组翻转链表
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        dum = ListNode(next=head)
+        pre, end = dum, dum
+        while head is not None:
+            for _ in range(k):
+                if end is None:
+                    return dum.next
+                end = end.next
+            if end is None:
+                return dum.next
+            next_node = end.next
+            end.next = None
+            start_node = pre.next
+            pre.next = self.reverseSingle(start_node)
+            start_node.next = next_node
+            pre, end = start_node, start_node
+        return dum.next
+
+
+    def reverseSingle(self, prev: Optional[ListNode]) -> Optional[ListNode]:
+        pre = None
+        if prev is not None:
+            next_node = prev.next
+            prev.next = pre
+            pre = prev
+            prev = next_node
+        return pre
+
+
+
+class LinkedNode:
+    def __init__(self, key, value, pre, next):
+        self.key = key
+        self.value = value
+        self.pre = pre
+        self.next = next
+
+
+# 146. LRU 缓存
+class LRUCache:
+
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.size = 0
+        self.mapCache: Dict[int, LinkedNode] = {}
+        self.head = LinkedNode(0, 0, None, None)
+        self.tail = LinkedNode(0, 0, None, None)
+        self.head.next = self.tail
+        self.tail.pre = self.head
+
+    def get(self, key: int) -> int:
+        if key not in self.mapCache:
+            return -1
+        # 将数据移动到最前端，然后返回
+        node = self.mapCache[key]
+        self.__del_node(node)
+        self.__insert_node_to_head(node)
+        return node.value
+
+    def put(self, key: int, value: int) -> None:
+        # todo judge cap and size
+        if key in self.mapCache:
+            exist_node = self.mapCache[key]
+            self.__del_node(exist_node)
+            self.__insert_node_to_head(exist_node)
+            exist_node.value = value
+            return
+        if self.size == self.capacity:
+            self.__del_node(self.tail.pre)
+
+        node = LinkedNode(key, value, None, None)
+        self.__insert_node_to_head(node)
+
+
+    def __del_node(self, node: Optional[LinkedNode]):
+        pre_node = node.pre
+        next_node = node.next
+        pre_node.next = next_node
+        next_node.pre = pre_node
+        node.next = None
+        node.pre = None
+        del self.mapCache[node.key]
+        self.size -= 1
+
+    def __insert_node_to_head(self, node: Optional[LinkedNode]):
+        next_node = self.head.next
+        self.head.next = node
+        node.pre = self.head
+        next_node.pre = node
+        node.next = next_node
+        self.size += 1
+        self.mapCache[node.key] = node
+
+
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+class TreeSolution:
+
+# 94. 二叉树的中序遍历
+    def inorderTraversal(self, root: Optional[TreeNode]) -> List[int]:
+        res = []
+        if not root:
+            return res
+        def dfs(node: Optional[TreeNode]):
+            if not node:
+                return
+            dfs(node.left)
+            res.append(node.val)
+            dfs(node.right)
+        dfs(root)
+        return res
+
+
+# 104. 二叉树的最大深度
+    def maxDepth(self, root: Optional[TreeNode]) -> int:
+        def dfs(node) -> int:
+            if not node:
+                return 0
+            return max(dfs(node.left), dfs(node.right)) + 1
+        return dfs(root)
+
+
+# 102. 二叉树的层序遍历
+    def levelOrder(self, root: Optional[TreeNode]) -> List[List[int]]:
+        res = [[]]
+        if not root:
+            return res
+        q = [root]
+        while q:
+            tmp = q
+            q = []
+            dum = []
+            while tmp:
+                node = tmp[0]
+                dum.append(node.val)
+                tmp = tmp[1:]
+                if node.left:
+                    q.append(node.left)
+                if node.right:
+                    q.append(node.right)
+            res.append(dum)
+        return res
+
+
+# 98. 验证二叉搜索树
+    def isValidBST(self, root: Optional[TreeNode]) -> bool:
+        def dfs(node: Optional[TreeNode], max_val, min_val) -> bool:
+            if not node:
+                return True
+            if node.val <= min_val or node.val >= max_val:
+                return False
+            return dfs(node.left, node.val, min_val) and dfs(node.right, max_val, node.val)
+        return dfs(root, inf, -inf)
+
+
+# 230. 二叉搜索树中第 K 小的元素
+    def kthSmallest(self, root: Optional[TreeNode], k: int) -> int:
+        res: int
+        def dfs(node: Optional[TreeNode]):
+            if not node:
+                return
+            dfs(node.left)
+            if self.k == 1:
+                self.res = node.val
+            self.k -= 1
+            dfs(node.right)
+        self.k = k
+        dfs(root)
+        return self.res
+
+# 114. 二叉树展开为链表
+    def flatten(self, root: Optional[TreeNode]) -> None:
+        self.res = []
+        def dfs(node: Optional[TreeNode]):
+            if not node:
+                return
+            self.res.append(node)
+            dfs(node.left)
+            dfs(node.right)
+        dfs(root)
+        for i in range(0, len(self.res) - 1):
+            pre_node = self.res[i]
+            pre_node.left = None
+            pre_node.right = self.res[i + 1]
+        return self.res
+# 105. 从前序与中序遍历序列构造二叉树
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
 
 
 if __name__ == '__main__':
-    print('Hello World')
+    for i in range(0, 10, 2):
+        print(i)
 
 
