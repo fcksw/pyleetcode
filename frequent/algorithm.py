@@ -1,3 +1,6 @@
+from operator import index
+from time import sleep
+from turtledemo.forest import start
 from typing import Optional,List, Dict
 import copy
 from math import inf
@@ -557,8 +560,177 @@ class TreeSolution:
             pre_node.left = None
             pre_node.right = self.res[i + 1]
         return self.res
+
 # 105. 从前序与中序遍历序列构造二叉树
     def buildTree(self, preorder: List[int], inorder: List[int]) -> Optional[TreeNode]:
+        def dfs(pre_list: List[int], in_list: List[int]) -> Optional[TreeNode]:
+            if not pre_list or not in_list:
+                return None
+            pre_val = pre_list[0]
+            index: int
+            for i, in_val in enumerate(in_list):
+                if pre_val == in_val:
+                    index = i
+            node = TreeNode(val= pre_val)
+            node.left = dfs(pre_list[1: index + 1], in_list[0: index])
+            node.right = dfs(pre_list[index + 1, len(pre_list)], in_list[index + 1: len(in_list)])
+            return node
+        return dfs(preorder, inorder)
+
+# 236. 二叉树的最近公共祖先 （后续遍历）
+    def lowestCommonAncestor(self, root: 'TreeNode', p: 'TreeNode', q: 'TreeNode') -> 'TreeNode':
+
+        def dfs(node: TreeNode, p: TreeNode, q: TreeNode) -> Optional[TreeNode]:
+            if not node:
+                return None
+            if node is p or node is q:
+                return node
+            left = dfs(node.left, p, q)
+            right = dfs(node.right, p, q)
+            if left and right:
+                return node
+            elif left:
+                return left
+            else:
+                return right
+        return dfs(root, p, q)
+
+# 124. 二叉树中的最大路径和
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        self.max_sum = -2**31
+        def dfs(node: Optional[TreeNode]) -> int:
+            if not node:
+                return 0
+            left = dfs(node.left)
+            right = dfs(node.right)
+            self.max_sum = max(self.max_sum, left + right + node.val)
+            return max(0, max(left, right) + node.val)
+        dfs(root)
+        return self.max_sum
+
+
+class TreeIndex:
+    def __init__(self, node: Optional[TreeNode], index: int):
+        self.node = node
+        self.index = index
+
+
+class Solution1:
+# 662. 二叉树最大宽度
+    def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        root_Tree_index = TreeIndex(node= root, index= 1)
+        q = [root_Tree_index]
+        max_len = 0
+        while q:
+            max_len = max(max_len, q[len(q) - 1].index - q[0].index + 1)
+            tmp = q
+            q = []
+            while tmp:
+                node_tmp = tmp[0].node
+                node_index = tmp[0].index
+                tmp = tmp[1:]
+                if node_tmp.left:
+                    q.append(TreeIndex(node = node_tmp.left, index = 2 * node_index))
+                if node_tmp.right:
+                    q.append(TreeIndex(node = node_tmp.right, index= 2 * node_index + 1))
+        return max_len
+
+# 143.重排链表
+# 输入：head = [1,2,3,4,5]
+# 输出：[1,5,2,4,3]
+    def reorderList(self, head: Optional[ListNode]) -> None:
+        fast, slow = head, head
+        while fast.next and fast.next.next:
+            fast = fast.next.next
+            slow = slow.next
+
+        mid_node = slow.next
+        slow.next = None
+        prev = None
+        while mid_node:
+            next_node = mid_node.next
+            mid_node.next = prev
+            prev = mid_node
+            mid_node = next_node
+        # prev , head
+        dum = head
+        while dum and prev:
+            next_dum = dum.next
+            dum.next = prev
+            dum = dum.next
+            prev = next_dum
+
+# LCR 025. 两数相加 II
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        l1 = self.reverseNode(l1)
+        l2 = self.reverseNode(l2)
+        tmp = 0
+        dum = ListNode(val= 0, next= None)
+        res = dum
+        while l1 or l2:
+            l1_val = l1.val if l1 else 0
+            l2_val = l2.val if l2 else 0
+            val = tmp + l2_val + l1_val
+            dum.next = ListNode(val= int(val / 10), next=None)
+            dum = dum.next
+            tmp = val % 10
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+        if tmp > 0:
+            dum.next = ListNode(val=tmp, next=None)
+        return self.reverseNode(res.next)
+
+
+
+    def reverseNode(self, head) -> Optional[ListNode]:
+        prev = None
+        while head:
+            next_node = head.next
+            head.next = prev
+            prev = head
+            head = next_node
+        return prev
+
+
+
+# 24. 两两交换链表中的节点
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dum = ListNode(val= 0, next= head)
+        pre, end = dum, dum
+        while end:
+            for _ in range(2):
+                if not end:
+                    return dum.next
+                end = end.next
+            if not end:
+                return dum.next
+            next_node = end.next
+            end.next = None
+            start_node = pre.next
+            end.next = start_node
+            start_node.next = next_node
+            pre.next = end
+            pre, end = start_node, start_node
+        return dum.next
+
+
+# 面试题 02.06. 回文链表
+    def isPalindrome(self, head: Optional[ListNode]) -> bool:
+        rome_node = list()
+        while head:
+            rome_node.append(head.val)
+            head = head.next
+        i, j = 0, len(rome_node) - 1
+        while i < j:
+            if rome_node[i] != rome_node[j]:
+                return False
+            i += 1
+            j -= 1
+        return True
+
+
+
+
 
 
 if __name__ == '__main__':
