@@ -1,15 +1,40 @@
-# 快排
-# 快排文档 https://leetcode.cn/problems/kth-largest-element-in-an-array/description/
-
-# 215. 数组中的第K个最大元素
+# 34. 在排序数组中查找元素的第一个和最后一个位置
+#[5,7,7,8,8,10], 8
 from typing import List
 
+from soupsieve.util import lower
+
+
 class Solution:
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        if not nums:
+            return []
+        left, right = 0, len(nums) - 1
+        first = self.lower(nums, target, left, right)
+        if left > right or nums[first] != target:
+            return [-1, -1]
+        second = self.lower(nums, target + 1, left, right) - 1
+        return [first, second]
 
-    def quickSort(self, nums: List[int]):
+    def lower(self, nums: List[int], target:int, left: int, right: int):
+        while left <= right:
+            mid = left + (right - left) // 2
+            if nums[mid] >= target:
+                right = mid - 1
+            else:
+                left = mid + 1
+        return left
 
 
 
-    def findKthLargest(self, nums: List[int], k: int) -> int:
 
 
+
+
+if __name__ == "__main__":
+
+    test1 = ['a', 'b', 'c']
+    test2 = [1,2,3]
+    for x in zip(test1, test2):
+        print(x)
+    pass
