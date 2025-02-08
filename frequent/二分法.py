@@ -8,10 +8,10 @@ from soupsieve.util import lower
 class Solution:
     def searchRange(self, nums: List[int], target: int) -> List[int]:
         if not nums:
-            return []
+            return [-1, -1]
         left, right = 0, len(nums) - 1
         first = self.lower(nums, target, left, right)
-        if left > right or nums[first] != target:
+        if first > right or nums[first] != target:
             return [-1, -1]
         second = self.lower(nums, target + 1, left, right) - 1
         return [first, second]
