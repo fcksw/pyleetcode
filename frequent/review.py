@@ -667,6 +667,129 @@ class TreeSolution:
         dfs(0, target)
         return res
 
+#113. 路径总和 II
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        res = []
+        path = []
+        def dfs(node: Optional[TreeNode], remain: int):
+            if not node:
+                return
+            remain -= node.val
+            path.append(node.val)
+            if remain == 0 and node.left is None and node.right is None:
+                res.append(path.copy())
+                path.pop()
+                return
+            dfs(node.left, remain)
+            dfs(node.right, remain)
+            path.pop()
+        dfs(root, targetSum)
+        return res
+
+#53. 最大子数组和
+    def maxSubArray(self, nums: List[int]) -> int:
+        curr, maxnum = nums[0], nums[0]
+        for i in range(1, len(nums)):
+            curr = max(nums[i], curr + nums[i])
+            maxnum = max(curr, maxnum)
+        return maxnum
+
+#55. 跳跃游戏
+    def canJump(self, nums: List[int]) -> bool:
+        pos = 0
+        for i in range(0, len(nums)):
+            if pos < i:
+                return False
+            pos = max(pos, i + nums[i])
+        return True
+
+#64. 最小路径和
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dp = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if i == j == 0:
+                    dp[i][j] = grid[0][0]
+                elif i == 0:
+                    dp[i][j] = dp[i][j - 1] + grid[i][j]
+                elif j == 0:
+                    dp[i][j] = dp[i - 1][j] + grid[i][j]
+                else:
+                    dp[i][j] = min(dp[i][j - 1], dp[i - 1][j]) + grid[i][j]
+        return dp[m - 1][n - 1]
+
+#435. 无重叠区间
+    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+        intervals.sort(key=lambda x:x[1])
+        m = len(intervals)
+        res = 0
+        pivot = intervals[0][1]
+        for i in range(1, m):
+            if pivot > intervals[i][0]:
+                res += 1
+            else:
+                pivot = intervals[i][1]
+        return res
+
+
+#121. 买卖股票的最佳时机
+    def maxProfit(self, prices: List[int]) -> int:
+        min_price, max_profit = prices[0], 0
+        for i in range(len(prices)):
+            if prices[i] > min_price:
+                max_profit = max(max_profit, prices[i] - min_price)
+            else:
+                min_price = prices[i]
+        return max_profit
+
+#122. 买卖股票的最佳时机 II
+    def maxProfit(self, prices: List[int]) -> int:
+        """持有 or 未持有"""
+        dp = [[0] * 2 for _ in range(len(prices))]
+        dp[0][0] = -prices[0]
+        for i in range(1, len(prices)):
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i])
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i])
+        return dp[len(prices) - 1][1]
+
+#123. 买卖股票的最佳时机 III
+    def maxProfit(self, prices: List[int]) -> int:
+        dp = [[0] * 5 for _ in range(len(prices))]
+        """ 未持有/持有第一支/卖出第一支/持有第二支/卖出第二支 """
+        dp[0][1], dp[0][3]= -prices[0], -prices[0]
+        for i in range(1, len(prices)):
+            dp[i][0] = dp[i - 1][0]
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i])
+            dp[i][2] = max(dp[i - 1][2], dp[i - 1][1] + prices[i])
+            dp[i][3] = max(dp[i - 1][3], dp[i - 1][2] - prices[i])
+            dp[i][4] = max(dp[i - 1][4], dp[i - 1][3] + prices[i])
+        return max(dp[len(prices) - 1])
+
+#309. 买卖股票的最佳时机含冷冻期
+    def maxProfit(self, prices: List[int]) -> int:
+        """持有/未持有/未持有（有卖出）"""
+        dp = [[0] * 3 for _ in range(len(prices))]
+        dp[0][0] = -prices[0]
+        for i in range(1, len(prices)):
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i])
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][2])
+            dp[i][2] = dp[i - 1][0] + prices[i]
+        return max(dp[len(prices) - 1][1], dp[len(prices) - 1][2])
+
+#714. 买卖股票的最佳时机含手续费
+    def maxProfit(self, prices: List[int], fee: int) -> int:
+        dp = [[0] * 2 for _ in range(len(prices))]
+        """持有/未持有"""
+        dp[0][0] = -prices[0]
+        for i in range(1, len(prices)):
+            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] - prices[i])
+            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] + prices[i] - fee)
+        return dp[len(prices) - 1][1]
+
+
+
+
 
 
 
@@ -688,7 +811,14 @@ class TreeIndex:
 
 if __name__ == "__main__":
     s = Solution()
-    nums = [1,2,3,4,5,6,7]
-    s.rotate(nums, 3)
-    print(nums)
+    nums = [4,2,12,4,2,5,42,54,3,2,5,6,5]
+    n = len(nums)
+    dp = [1 for _ in range(n)]
+    for i in range(1, n):
+        max_num = 1
+        for j in range(0, i):
+            if nums[i] > nums[j]:
+                max_num = max(dp[i], 1 + dp[j])
+        dp[i] = max_num
+    print(max(dp))
 

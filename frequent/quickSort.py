@@ -65,9 +65,11 @@ class Solution:
         return left
 
 
+
 if __name__ == "__main__":
     name = "abc"
     print(f'llal {name}')
+    print((-1)/2)
     # listSort = [1,4,6,32,5,0,3,12,53,223]
     # s = Solution()
     # s.quickSort(0, len(listSort) - 1, listSort)
