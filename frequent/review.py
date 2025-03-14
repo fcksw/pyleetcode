@@ -1,8 +1,8 @@
+import collections
 import os
-from typing import Optional, List,Dict
+from collections import defaultdict
+from typing import Optional,List,Dict
 from math import inf
-
-
 
 # Definition for singly-linked list.
 class ListNode:
@@ -788,8 +788,149 @@ class TreeSolution:
         return dp[len(prices) - 1][1]
 
 
+#395. 至少有 K 个重复字符的最长子串
+    def longestSubstring(self, s: str, k: int) -> int:
+        n = len(s)
+        max_len = 0
+        for i in range(n):
+            dic = {}
+            num = 0
+            for j in range(i, n):
+                if s[j] not in dic:
+                    dic[s[j]] = 0
+                dic[s[j]] += 1
+                if dic[s[j]] == k:
+                    num += 1
+                if num == len(dic):
+                    max_len = max(max_len, j - i + 1)
+        return max_len
 
 
+
+#200. 岛屿数量
+    def numIslands(self, grid: List[List[str]]) -> int:
+        m, n = len(grid), len(grid[0])
+        def dfs(i:int, j:int):
+            if i < 0 or j < 0 or i > m - 1 or j > n - 1:
+                return
+            if grid[i][j] == '0' or grid[i][j] == '2':
+                return
+            grid[i][j] = '2'
+            dfs(i - 1, j)
+            dfs(i + 1, j)
+            dfs(i, j - 1)
+            dfs(i, j + 1)
+
+        self.res = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == '1':
+                    self.res += 1
+                    dfs(i, j)
+        return self.res
+
+#124. 二叉树中的最大路径和
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        def dfs(node:Optional[TreeNode]) -> int:
+            if not node:
+                return 0
+            left = dfs(node.left)
+            right = dfs(node.right)
+            self.max_sum = max(self.max_sum, left + right + node.val)
+            return max(0, max(left, right) + node.val)
+        dfs(root)
+        return self.max_sum
+
+##124. 二叉树中的最大路径和
+    def maxPathSum2(self, root: Optional[TreeNode]) -> int:
+        def dfs(node: Optional[TreeNode]) -> int:
+            if not node:
+                return 0
+            left = dfs(node.left)
+            right = dfs(node.right)
+            self.max_num = max(self.max_num, left + right + node.val)
+            return max(0, max(left, right) + node.val)
+        dfs(root)
+        return self.max_num
+
+#827. 最大人工岛
+    def largestIsland(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        def dfs(i: int, j: int, index: int) -> int:
+            if i <0 or j < 0 or i > m - 1 or j > n - 1:
+                return 0
+            if grid[i][j] == 0 or grid[i][j] > 1:
+                return 0
+            grid[i][j] = index
+            return 1 + dfs(i + 1,j) + dfs(i - 1, j) + dfs(i, j - 1) + dfs(i, j + 1)
+
+        index = 2
+        p_dic = defaultdict(int)
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 1:
+                    p = dfs(i, j, index)
+                    p_dic[index] = p
+                    index += 1
+        max_m = 0
+        for i in range(m):
+            for j in range(n):
+                if grid[i][j] == 0:
+                    userd = []
+                    """up down left right"""
+                    up, down, left, right = 0, 0, 0, 0
+                    if i - 1 >= 0:
+                        up = p_dic[grid[i - 1][j]]
+                        userd.append(grid[i - 1][j])
+                    if i + 1 < m:
+                        if grid[i + 1][j] not in userd:
+                            down = p_dic[grid[i + 1][j]]
+                    if j - 1 >= 0:
+                        if grid[i][j - 1] not in userd:
+                            left = p_dic[grid[i][j - 1]]
+                    if j + 1 < n:
+                        if grid[i][j + 1] not in userd:
+                            right = p_dic[grid[i][j + 1]]
+                    max_m = max(max_m, up + down + left + right + 1)
+        return max_m
+
+
+    def minPathSum(self, grid: List[List[int]]) -> int:
+
+        m, n = len(grid), len(grid[0])
+        f = [[1] + [0] * (n - 1) for _ in range(m - 1)]
+
+        dp = [[0] * n for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if i == 0 and j == 0:
+                    dp[i][j] = grid[i][j]
+                elif i == 0:
+                    dp[i][j] = dp[i][j - 1] + grid[i][j]
+                elif j == 0:
+                    dp[i][j] = dp[i - 1][j] + grid[i][j]
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]
+        return dp[m - 1][n - 1]
+
+#207. 课程表
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        dic = defaultdict(list)
+        indeg = {i: 0 for i in range(numCourses)}
+        for pre in prerequisites:
+            dic[pre[1]].append(pre[0])
+            indeg[pre[0]] += 1
+        p = collections.deque([key for key, value in indeg.items() if value == 0])
+
+        res = 0
+        while p:
+            res += 1
+            u = p.popleft()
+            for v in dic[u]:
+                indeg[v] -= 1
+                if indeg[v] == 0:
+                    p.append(v)
+        return res == numCourses
 
 
 
@@ -797,28 +938,26 @@ class TreeIndex:
     def __init__(self, node: Optional[TreeNode], index: int):
         self.node = node
         self.index = index
+import os
 
 
 
+import secrets
+import string
 
+def generate_aes_key_str(key_length):
+    # 定义可能用到的字符集
+    all_characters = string.ascii_letters + string.digits + string.punctuation
+    # 随机选取字符生成指定长度的密钥
+    key = ''.join(secrets.choice(all_characters) for i in range(key_length))
+    return key
 
-
-
-
-
+# 生成 16 字节（128 位）对应长度的字符串密钥
+key_128_str = generate_aes_key_str(16)
+print(f"128 位 AES 字符串密钥: {key_128_str}")
 
 
 
 if __name__ == "__main__":
     s = Solution()
-    nums = [4,2,12,4,2,5,42,54,3,2,5,6,5]
-    n = len(nums)
-    dp = [1 for _ in range(n)]
-    for i in range(1, n):
-        max_num = 1
-        for j in range(0, i):
-            if nums[i] > nums[j]:
-                max_num = max(dp[i], 1 + dp[j])
-        dp[i] = max_num
-    print(max(dp))
 
