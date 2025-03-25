@@ -351,7 +351,7 @@ class Solution:
 
 class LinkedNode:
     def __init__(self, key, value, pre, next):
-        self.key = key
+        self.key: int = key
         self.value = value
         self.pre = pre
         self.next = next
@@ -932,29 +932,197 @@ class TreeSolution:
                     p.append(v)
         return res == numCourses
 
+#210. 课程表 II
+    def findOrder(self, numCourses: int, prerequisites: List[List[int]]) -> List[int]:
+        """构建图，入度"""
+        dic = defaultdict(list)
+        indeg = {i:0 for i in range(numCourses)}
+        for item in prerequisites:
+            dic[item[1]].append(item[0])
+            indeg[item[1]] += 1
+
+        """入度为0"""
+        p = collections.deque([key for key, value in indeg.items() if value == 0])
+        res = []
+        while p:
+            course = p.popleft()
+            res.append(course)
+            for c in dic[course]:
+                indeg[c] -= 1
+                if indeg[c] == 0:
+                    p.append(c)
+        return res
+
+#124. 二叉树中的最大路径和
+    def maxPathSum(self, root: Optional[TreeNode]) -> int:
+        self.max_num = -2 ** 31
+        def dfs(node: Optional[TreeNode]) -> int:
+            if not node:
+                return 0
+            left = dfs(node.left)
+            right = dfs(node.right)
+            self.max_num = max(self.max_num, left + right + node.val)
+            return max(0, max(left, right) + node.val)
+        dfs(root)
+        return self.max_num
+
+
+
+#39. 组合总和
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        path = []
+        res = []
+        def dfs(index: int, remain: int):
+            if remain < 0:
+                return
+            if remain == 0:
+                res.append(path.copy())
+            for i in range(index, len(candidates)):
+                path.append(candidates[i])
+                dfs(i, remain - candidates[i])
+                path.pop()
+        dfs(0, target)
+        return res
+
+#40. 组合总和 II
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        path, res = [], []
+        candidates.sort()
+        def dfs(index: int, remain: int):
+            if remain < 0:
+                return
+            if remain == 0:
+                res.append(path.copy())
+
+            for i in range(index, len(candidates)):
+                if i > index and candidates[i] == candidates[i - 1]:
+                    continue
+                path.append(candidates[i])
+                dfs(i + 1, remain - candidates[i])
+                path.pop()
+        dfs(0, target)
+        return res
+
+
+#112. 路径总和
+    def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
+        def dfs(node: Optional[TreeNode], remain: int):
+            if not node:
+                return False
+            if remain - node.val == 0 and not node.left and not node.right:
+                return True
+            return dfs(node.left, remain - node.val) or dfs(node.right, remain - node.val)
+        return dfs(root, targetSum)
+#113. 路径总和 II
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+        path, res = [], []
+        def dfs(node: Optional[TreeNode], remain: int):
+            if not node:
+                return
+            path.append(node.val)
+            if remain - node.val == 0 and not node.left and not node.right:
+                res.append(path.copy())
+                path.pop()
+                return
+            remain = remain - node.val
+            dfs(node.left, remain)
+            dfs(node.right, remain)
+            path.pop()
+        dfs(root, targetSum)
+        return res
+
+#5. 最长回文子串
+    def longestPalindrome(self, s: str) -> str:
+        n = len(str)
+        dp = [[False] * n for _ in range(n) ]
+        for i in range(n):
+            dp[i][i] = True
+        max_len = s[0]
+        for l in range(2, n + 1):
+            for i in range(n):
+                j = l + i - 1
+                if j >= n:
+                    break
+                flag = s[i] == s[j]
+                if l == 2:
+                    dp[i][j] = flag
+                else:
+                    dp[i][j] = flag & dp[i + 1][j - 1]
+                if dp[i][j]:
+                    max_len = s[i:j + 1]
+        return max_len
+
+#64. 最小路径和
+    def minPathSum(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dp = [[0] * n for _ in range(m)]
+        dp[0][0] = grid[0][0]
+        for i in range(m):
+            for j in range(n):
+                if i == j == 0:
+                    continue
+                elif i == 0:
+                    dp[i][j] = grid[i][j] + dp[i][j - 1]
+                elif j == 0:
+                    dp[i][j] = grid[i][j] + dp[i - 1][j]
+                else:
+                    dp[i][j] = min(dp[i - 1][j], dp[i][j - 1]) + grid[i][j]
+        return dp[m - 1][n - 1]
+
+#435. 无重叠区间
+    def eraseOverlapIntervals(self, intervals: List[List[int]]) -> int:
+        intervals.sort(key=lambda x: x[1])
+        point = intervals[1]
+        n = len(intervals)
+        res = 0
+        for i in  range(1, n):
+            interval = intervals[i]
+            if point > interval[0]:
+                res += 1
+            else:
+                point = interval[1]
+        return res
+
+#53. 最大子数组和
+    def maxSubArray(self, nums: List[int]) -> int:
+        max_sum, max_curr, n = nums[0], nums[0], len(nums)
+        for i in range(1, n):
+            max_curr = max(nums[i], max_curr + nums[i])
+            max_sum = max(max_sum, max_curr)
+        return max_sum
+
+#300. 最长递增子序列
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        dp = [1] * n
+        for i in range(1, n):
+            for j in range(0, i):
+                if nums[i] > nums[j]:
+                    dp[i] = max(dp[j] + 1, dp[i])
+        return max(dp)
+
+#1885. 统计数对
+    def countPairs(self, nums1: List[int], nums2: List[int]) -> int:
+        n = len(nums1)
+        diff = sorted([nums1[i] - nums2[i] for i in range(n)])
+        l, r = 0, n - 1
+        res = 0
+        while l < r:
+            num = diff[l] + diff[r]
+            if num > 0:
+                res += r - l
+                r -= 1
+            else:
+                l += 1
+        return res
+
 
 
 class TreeIndex:
     def __init__(self, node: Optional[TreeNode], index: int):
         self.node = node
         self.index = index
-import os
 
-
-
-import secrets
-import string
-
-def generate_aes_key_str(key_length):
-    # 定义可能用到的字符集
-    all_characters = string.ascii_letters + string.digits + string.punctuation
-    # 随机选取字符生成指定长度的密钥
-    key = ''.join(secrets.choice(all_characters) for i in range(key_length))
-    return key
-
-# 生成 16 字节（128 位）对应长度的字符串密钥
-key_128_str = generate_aes_key_str(16)
-print(f"128 位 AES 字符串密钥: {key_128_str}")
 
 
 
