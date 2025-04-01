@@ -939,7 +939,7 @@ class TreeSolution:
         indeg = {i:0 for i in range(numCourses)}
         for item in prerequisites:
             dic[item[1]].append(item[0])
-            indeg[item[1]] += 1
+            indeg[item[0]] += 1
 
         """入度为0"""
         p = collections.deque([key for key, value in indeg.items() if value == 0])
