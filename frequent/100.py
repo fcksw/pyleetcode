@@ -1,5 +1,20 @@
 import collections
-from typing import List, Dict
+import copy
+from email.header import Header
+from typing import List, Dict, Optional
+from xmlrpc.client import Boolean
+
+
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
 
 
 class Solution:
@@ -145,9 +160,194 @@ class Solution:
         return res
 
 
+#53. 最大子数组和
+    def maxSubArray(self, nums: List[int]) -> int:
+        curr, max_sum = nums[0], nums[0]
+        for i in range(1, len(nums)):
+            curr = max(nums[i], curr + nums[i])
+            max_sum = max(curr, max_sum)
+        return max_sum
+
+#56. 合并区间
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        intervals.sort(key=lambda x: x[0])
+        povit = intervals[0]
+        res = []
+        for interval in intervals:
+            if povit[1] >= interval[0]:
+                povit[1] = max(povit[1], interval[1])
+            else:
+                res.append(povit)
+                povit = interval
+        res.append(povit)
+        return res
+
+#57. 插入区间
+    def insert(self, intervals: List[List[int]], newInterval: List[int]) -> List[List[int]]:
+        res = []
+        left, right = newInterval[0], newInterval[1]
+        merged = False
+        for interval in intervals:
+            if not merged:
+                if right < interval[0]:
+                    res.append([left, right])
+                    res.append(interval)
+                    merged = True
+                elif left > interval[1]:
+                    res.append(interval)
+                else:
+                    left = min(left, interval[0])
+                    right = max(right, interval[1])
+            else:
+                res.append(interval)
+        if not merged:
+            res.append([left, right])
+        return res
 
 
+#189. 轮转数组
+    def rotate(self, nums: List[int], k: int) -> None:
+        dic = {}
+        n = len(nums)
+        if k >= n:
+            k = k % n
+        for i, num in enumerate(nums):
+            dic[(i + k) % n] = num
+
+        for key, val in dic.items():
+            nums[key] = val
+
+#54. 螺旋矩阵
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        left, right, up, down = 0, len(matrix[0]) - 1, 0, len(matrix) - 1
+        res = []
+        while True:
+            if left > right:
+                break
+            for i in range(left, right + 1):
+                res.append(matrix[i][up])
+            up += 1
+
+            if up > down:
+                break
+            for j in range(up, down + 1):
+                res.append(matrix[right][j])
+            right -= 1
+
+            if right < left:
+                break
+            for k in range(right, left - 1, -1):
+                res.append(matrix[k][down])
+            down -= 1
+
+            if down < up:
+                break
+            for g in range(down, up - 1, -1):
+                res.append(matrix[left][g])
+            left += 1
+        return res
 
 
+#48. 旋转图像
+    def rotate(self, matrix: List[List[int]]) -> None:
+        """
+        Do not return anything, modify matrix in-place instead.
+        """
+        tmp = copy.deepcopy(matrix)
+        n = len(matrix)
+        for i in range(n):
+            for j in range(n):
+                matrix[j][i] = tmp[i][j]
 
+
+#160. 相交链表
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        A, B = headA, headB
+        while A != B:
+            A = A.next if A else headB
+            B = B.next if B else headA
+        return A
+
+
+#21. 合并两个有序链表
+    def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+        dum:Optional[ListNode] = ListNode()
+        curr = dum
+        while list1 and list2:
+            v1 = list1.val
+            v2 = list2.val
+            if v1 <= v2:
+                curr.next = list1
+                list1 = list1.next
+            else:
+                curr.next = list2
+                list2 = list2.next
+            curr = curr.next
+        if list1:
+            curr.next = list1
+        else:
+            curr.next = list2
+        return dum.next
+
+#206. 反转链表
+    def reverseList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        prev = None
+        while head:
+            next_node = head.next
+            head.next = prev
+            prev = head
+            head = next_node
+        return prev
+
+#25. K 个一组翻转链表
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        dum = ListNode(val=0, next=head)
+        prev, end = dum, dum
+        while end:
+            for _ in range(k):
+                if not end:
+                    break
+                end = end.next
+            if not end:
+                break
+            start = prev.next
+            next_node = end.next
+            end.next = None
+            prev.next = self.reverseList(start)
+            start.next = next_node
+            end = start
+            prev = start
+        return dum.next
+
+#141. 环形链表
+    def hasCycle(self, head: Optional[ListNode]) -> bool:
+        fast, slow = head, head
+        first = True
+        while fast and fast.next:
+            if fast == slow and not first:
+                return True
+            first = False
+            fast = fast.next.next
+            slow = slow.next
+        return False
+
+
+#2. 两数相加
+    def addTwoNumbers(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        res = ListNode()
+        dum = res
+        tmp = 0
+        while l1 or l2:
+            l1Val = l1.val if l1 else 0
+            l2Val = l2.val if l2 else 0
+            l1 = l1.next if l1 else None
+            l2 = l2.next if l2 else None
+            sum_val = l1Val + l2Val + tmp
+            next_val = sum_val % 10
+            dum.next = ListNode(val=next_val)
+            dum = dum.next
+            tmp = sum_val/10
+        if tmp > 0:
+            dum.next = ListNode(val=tmp)
+        return res.next
 
