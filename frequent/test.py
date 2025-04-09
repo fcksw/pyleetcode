@@ -21,6 +21,11 @@ print(f"自定义 CRC32 校验值: {hex(crc_value)}")
 print(len("yYM9EYMYyy9hOpyH"))
 
 
+
+
+
+
+
 if __name__ == "__main__":
     def custom_crc32(data):
         # 初始化寄存器为全 1

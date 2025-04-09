@@ -17,6 +17,13 @@ class ListNode:
         self.next = next
 
 
+class TreeNode:
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
 class Solution:
 
     #1. 两数之和
@@ -350,4 +357,75 @@ class Solution:
         if tmp > 0:
             dum.next = ListNode(val=tmp)
         return res.next
+
+
+#5. 最长回文子串
+    def longestPalindrome(self, s: str) -> str:
+        n = len(str)
+        dp = [[False] * n for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = True
+        max_str = s[0]
+        for l in range(2, n + 1):
+            for i in range(n - l + 1):
+                j = i + l - 1
+                flag = s[i] == s[j]
+                if l == 2:
+                    dp[i][j] = flag
+                else:
+                    dp[i][j] = flag and dp[i + 1][j - 1]
+                if dp[i][j]:
+                    max_str = s[i : j + 1]
+        return max_str
+
+#39. 组合总和
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        res, path = [], []
+        def dfs(index, remain):
+            if remain < 0:
+                return
+            if remain == 0:
+                res.append(path.copy())
+            for i in range(index, len(candidates)):
+                path.append(candidates[i])
+                dfs(i, remain - candidates[i])
+                path.pop()
+        dfs(0, target)
+        return res
+
+
+#40. 组合总和 II
+    def combinationSum2(self, candidates: List[int], target: int) -> List[List[int]]:
+        res, path = [], []
+        candidates.sort()
+        def dfs(index, remain):
+            if remain < 0:
+                return
+            if remain == 0:
+                res.append(path.copy())
+            for i in range(index, len(candidates)):
+                if i > 0 and candidates[i] == candidates[i - 1]:
+                    continue
+                path.append(candidates[i])
+                dfs(i + 1, remain - candidates[i])
+                path.pop()
+        return res
+
+
+#113. 路径总和 II
+    def pathSum(self, root: Optional[TreeNode], targetSum: int) -> List[List[int]]:
+            res, path = [], []
+            def dfs(node: Optional[TreeNode], remain: int):
+                if not node:
+                    return
+                path.append(node.val)
+                if remain - node.val == 0 and not node.left and not node.right:
+                    res.append(path.copy())
+                    path.pop()
+                    return
+                dfs(node.left, remain - node.val)
+                dfs(node.right, remain - node.val)
+                path.pop()
+            dfs(root, targetSum)
+            return res
 
