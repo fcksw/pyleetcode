@@ -896,10 +896,7 @@ class TreeSolution:
 
 
     def minPathSum(self, grid: List[List[int]]) -> int:
-
         m, n = len(grid), len(grid[0])
-        f = [[1] + [0] * (n - 1) for _ in range(m - 1)]
-
         dp = [[0] * n for _ in range(m)]
         for i in range(m):
             for j in range(n):

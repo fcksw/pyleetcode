@@ -1,8 +1,7 @@
 import collections
 import copy
-from email.header import Header
+import time
 from typing import List, Dict, Optional
-from xmlrpc.client import Boolean
 
 
 # class ListNode:
@@ -428,4 +427,23 @@ class Solution:
                 path.pop()
             dfs(root, targetSum)
             return res
+
+    def diameterOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        self.res = 0
+        def dfs(node: Optional[TreeNode]) -> int:
+            if not node:
+                return 0
+            left = dfs(node.left)
+            right = dfs(node.right)
+            self.res = max(self.res, left + right)
+            return max(left, right) + 1
+        dfs(root)
+        return self.res
+
+
+
+
+
+if __name__ == '__main__':
+    print(str(int(time.time() * 1000)) )
 
