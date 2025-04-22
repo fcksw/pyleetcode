@@ -22,7 +22,7 @@ def subarraySum(self, nums: List[int], k: int) -> int:
             和
             dic[sj] += 1
             
-            即 在sj 之前，si出现的次数
+            即 在sj 之前（或者说，在sj的左边），si出现的次数
          """
         dic[sj] += 1
     return res
