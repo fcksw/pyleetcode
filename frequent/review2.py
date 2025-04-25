@@ -1,7 +1,10 @@
 import collections
 from typing import Optional, List, Dict
 
-from pkg_resources import run_main
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
 
 
 class LinkedNode:
@@ -125,3 +128,37 @@ class Solution:
                 curr = 1
             max_len = max(max_len, curr)
         return max_len
+
+
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        pre_sum = [0 * (n + 1)]
+        for i in range(n):
+            pre_sum[i + 1] = pre_sum[i] + nums[i]
+
+        res = 0
+        dic = collections.defaultdict(int)
+        for i in range(n + 1):
+            si = pre_sum[i] - k
+            if si in dic:
+                res += dic[si]
+            dic[pre_sum[i]] += 1
+        return res
+
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        dic = collections.defaultdict(int)
+        l, res = 0, 0
+        for r in range(len(s)):
+            if s[r] in dic and dic[s[r]] >= l:
+                l = dic[s[r]] + 1
+            dic[s[r]] = r
+            res = max(res, r - l + 1)
+        return res
+
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> Optional[ListNode]:
+        A, B = headA, headB
+        while A != B:
+            A = A.next if A else headB
+            B = B.next if B else headA
+        return A
+
