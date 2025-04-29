@@ -27,3 +27,18 @@ def subarraySum(self, nums: List[int], k: int) -> int:
         dic[sj] += 1
     return res
 
+
+#1885. 统计数对
+def countPairs(self, nums1: List[int], nums2: List[int]) -> int:
+    n = len(nums1)
+    diff = sorted([nums1[i] - nums2[i] for i in range(n)])
+    l, r = 0, n - 1
+    res = 0
+    while l < r:
+        num = diff[l] + diff[r]
+        if num > 0:
+            res += r - l
+            r -= 1
+        else:
+            l += 1
+    return res
