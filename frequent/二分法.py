@@ -1,5 +1,6 @@
 # 34. 在排序数组中查找元素的第一个和最后一个位置
 #[5,7,7,8,8,10], 8
+import collections
 from typing import List
 
 
@@ -25,7 +26,23 @@ class Solution:
         return left
 
 
+    def canFinish(self, numCourses: int, prerequisites: List[List[int]]) -> bool:
+        dic = collections.defaultdict(list)
+        indegre = {i: 0 for i in range(numCourses)}
+        for pre in prerequisites:
+            indegre[pre[0]] += 1
+            dic[pre[1]].append(pre[0])
+        p = collections.deque([key for key, value in indegre.items() if value == 0])
 
+        res = 0
+        while p:
+            u = p.popleft()
+            res += 1
+            for course in dic[u]:
+                indegre[course] -= 1
+                if indegre[course] == 0:
+                    p.append(course)
+        return res == numCourses
 
 
 
