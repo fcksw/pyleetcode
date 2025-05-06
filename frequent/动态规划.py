@@ -62,3 +62,23 @@ class Solution:
                     dp[i] = max(dp[i], dp[j] + 1)
                     res = max(res, dp[i])
         return res
+
+    """给你两个下标从 0 开始的数组 present 和 future ，present[i] 和 future[i] 
+    分别代表第 i 支股票现在和将来的价格。每支股票你最多购买 一次 ，你的预算为 budget
+    求最大的收益。
+    """
+    # 0-1背包问题
+    # 2291. 最大股票收益
+    def maximumProfit(self, present: List[int], future: List[int], budget: int) -> int:
+        m, n = len(present), budget + 1 #金额
+        dp = [[0] * n for _ in range(m)]
+        for v in range(n + 1):
+            if v >= present[0]:
+                dp[0][v] = max(0, future[0] - present[0])
+        for i in range(m):
+            for j in range(n + 1):
+                if j < present[i]:
+                    dp[i][j] = dp[i - 1][j]
+                else:
+                    dp[i][j] = max(dp[i - 1][j], dp[i - 1][j - present[i]] + future[i] - present[i])
+        return dp[m - 1][n]
