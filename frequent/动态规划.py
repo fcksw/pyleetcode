@@ -30,3 +30,35 @@ class Solution:
                     res = max(res, dp[i][j])
         return res
 
+    # 5. 最长回文子串
+    def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        dp = [[False] * n for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = True
+        max_str = s[0]
+        for l in range(2, n + 1):
+            for i in range(n):
+                j = i + l - 1
+                if j >= n:
+                    break
+                if l == 2:
+                    dp[i][j] = s[i] == s[j]
+                else:
+                    dp[i][j] = (s[i] == s[j]) and dp[i + 1][j - 1]
+                if dp[i][j]:
+                    max_str = s[i:j + 1]
+        return max_str
+
+
+    # 300. 最长递增子序列
+    def lengthOfLIS(self, nums: List[int]) -> int:
+        n = len(nums)
+        dp = [1] * n
+        res = 1
+        for i in range(1, n):
+            for j in range(0, i):
+                if nums[i] > nums[j]:
+                    dp[i] = max(dp[i], dp[j] + 1)
+                    res = max(res, dp[i])
+        return res
