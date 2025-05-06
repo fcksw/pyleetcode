@@ -264,6 +264,7 @@ class Solution:
 
 
 
+
 if __name__ == '__main__':
     print((0 + 4 + 6) // 10)
     print((0 + 4 + 6) % 10)

@@ -5,6 +5,6 @@ def out_func(x: int):
     return inner_func
 
 if __name__ == '__main__':
-    remain = 19
-    remain -= 10
-    print(remain)
+    res = []
+    print(len(res))
+    print(not res)
