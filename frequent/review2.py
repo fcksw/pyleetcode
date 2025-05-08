@@ -262,6 +262,38 @@ class Solution:
             res.append(p)
         return res
 
+    def selectK(self, nums: List[int], k):
+        self.quickSort(0, len(nums) - 1, k, nums)
+        if k - 1 > len(nums) - 1:
+            return -1
+        return nums[k - 1]
+
+    def quickSort(self, left, right, k, nums:List[int]):
+        if left >= right:
+            return
+        p = self.partition(left, right, nums)
+        if p == k - 1:
+            return
+        elif p > k - 1:
+            self.quickSort(left, p - 1, k, nums)
+        else:
+            self.quickSort(p + 1, right, k, nums)
+
+    def partition(self, left, right, nums:List[int]) -> int:
+        povit = nums[left]
+        while left < right:
+            while left < right and nums[right] >= povit:
+                right -= 1
+            if left < right and nums[right] < povit:
+                nums[left] = nums[right]
+                left += 1
+            while left < right and nums[left] <= povit:
+                left += 1
+            if left < right and nums[left] > povit:
+                nums[right] = nums[left]
+                right -= 1
+        nums[left] = povit
+        return left
 
 
 
