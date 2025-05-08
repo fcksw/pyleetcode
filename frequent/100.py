@@ -1,5 +1,8 @@
 import collections
 import copy
+from email.header import Header
+from itertools import chain
+from turtledemo.penrose import start
 import time
 from typing import List, Dict, Optional
 
@@ -356,6 +359,197 @@ class Solution:
         if tmp > 0:
             dum.next = ListNode(val=tmp)
         return res.next
+
+
+#19. 删除链表的倒数第 N 个结点
+    def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+        dum = ListNode(next=head)
+        fast, slow = dum, dum
+        for _ in range(n):
+            if not fast:
+                return dum.next
+            fast = fast.next
+        while fast.next:
+            slow = slow.next
+            fast = fast.next
+
+        slow.next = slow.next.next
+        return dum.next
+
+
+#24. 两两交换链表中的节点
+    def swapPairs(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        dum = ListNode(next=head)
+        pre, end = dum, dum
+        while end:
+            for _ in range(2):
+                if not end:
+                    break
+                end = end.next
+            if not end:
+                break
+            start_node = pre.next
+            next_node = end.next
+            end.next = start_node
+            pre.next = end
+            start_node.next = next_node
+            pre = start_node
+            end = start_node
+        return dum.next
+
+
+#23. 合并 K 个升序链表
+    def mergeKLists(self, lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+        if len(lists) == 0:
+            return None
+        elif len(lists) == 1:
+            return lists[0]
+        povit = lists[0]
+        for i in range(1, len(lists)):
+            povit = self.mergeSingle(povit, lists[i])
+        return povit
+
+
+    def mergeSingle(self, l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+        dum = ListNode()
+        curr = dum
+        while l1 and l2:
+            if l1.val <= l2.val:
+                curr.next = l1
+                l1 = l1.next
+            else:
+                curr.next = l2
+                l2 = l2.next
+            curr = curr.next
+        if l1:
+            curr.next = l1
+        else:
+            curr.next = l2
+        return dum.next
+
+#215. 数组中的第K个最大元素
+    def findKthLargest(self, nums: List[int], k: int) -> int:
+        if k >= len(nums):
+            return -1
+        self.findK(0, len(nums) - 1, nums, k)
+        return nums[k - 1]
+
+
+    def findK(self, left: int, right: int, nums: List[int], k):
+        p = self.quickSort(left, right, nums)
+        if p == k - 1:
+            return
+        elif p > k - 1:
+            self.findK(left, p, nums, k)
+        else:
+            self.findK(p, right, nums, k)
+
+
+    def quickSort(self, left: int, right: int, nums: List[int]) -> int:
+        pivot = nums[left]
+        while left < right:
+            while left < right and nums[right] < pivot:
+                right -= 1
+            if left < right and nums[right] >= pivot:
+                nums[left] = nums[right]
+                left += 1
+
+            while left < right and nums[left] >= pivot:
+                left += 1
+            if left < right and nums[left] < pivot:
+                nums[right] = nums[left]
+                right -= 1
+        nums[left] = pivot
+        return left
+
+#347. 前 K 个高频元素
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        dic = collections.defaultdict(int)
+        max_time = 0
+        for num in nums:
+            dic[num] += 1
+            max_time = max(max_time, dic[num])
+        arr = [0] * (max_time + 1)
+        for num, time in dic.items():
+            arr[time] = num
+        res = []
+        for i in range(max_time, -1, -1):
+            if k == 0:
+                break
+            if arr[i] == 0:
+                continue
+            k -= 1
+            res.append(arr[i])
+        return res
+
+
+
+
+
+
+
+
+
+
+
+class LinkedNode:
+    def __init__(self, key: int, val: int, next: Optional[ListNode], pre: Optional[ListNode]):
+        self.key = key
+        self.val = val
+        self.next = next
+        self.pre = pre
+
+class LRUCache:
+
+    def __init__(self, capacity: int):
+        self.cache: Dict[int, LinkedNode] = {}
+        self.tail = LinkedNode(0, 0, None, None)
+        self.head = LinkedNode(0, 0, None, None)
+        self.cap = capacity
+        self.size = 0
+        self.head.next = self.tail
+        self.tail.pre = self.head
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return  -1
+        node = self.cache[key]
+        if self.head.next == node:
+            return node.val
+        self.deleteNode(node)
+        self.insertNode(node)
+        return node.val
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            node = self.cache[key]
+            node.val = value
+            self.deleteNode(node)
+            self.insertNode(node)
+        else:
+            if self.size >= self.cap:
+                self.deleteNode(self.tail.pre)
+            node = LinkedNode(key=key, val=value, next=None, pre=None)
+            self.insertNode(node)
+
+
+
+    def deleteNode(self, node: Optional[LinkedNode]):
+        self.size -= 1
+        node.pre.next = node.next
+        node.next.pre = node.pre
+        node.next = None
+        node.pre = None
+        del self.cache[node.key]
+
+    def insertNode(self, node: Optional[LinkedNode]):
+        """ 不再此处作size大小判断 """
+        self.size += 1
+        self.cache[node.key] = node
+        node.next = self.head.next
+        node.pre = self.head
+        self.head.next.pre = node
+        self.head.next = node
 
 
 #5. 最长回文子串

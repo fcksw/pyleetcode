@@ -1,3 +1,4 @@
+import collections
 from typing import List
 
 
@@ -35,5 +36,28 @@ class Solution:
                 path.pop()
         dfs(0, target)
         return res
+
+
+#     46. 全排列
+    def permute(self, nums: List[int]) -> List[List[int]]:
+        res, path = [], []
+        used = collections.defaultdict(bool)
+        def dfs(first: int):
+            if len(path) == len(nums):
+                res.append(path.copy())
+                return
+            for i in range(len(nums)):
+                if nums[i] in used and used[nums[i]]:
+                    continue
+                used[nums[i]] = True
+                path.append(nums[i])
+                dfs(i)
+                used[nums[i]] = False
+                path.pop()
+        dfs(0)
+        return res
+
+
+
 
 
