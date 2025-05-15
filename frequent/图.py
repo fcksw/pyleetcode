@@ -9,7 +9,7 @@ class Solution:
         inDegree = {key : 0 for key in range(numCourses)}
         for pre in prerequisites:
             dic[pre[1]].append(pre[0])
-            inDegree[pre[1]] += 1
+            inDegree[pre[0]] += 1
         p = collections.deque([key for key, value in inDegree.items() if value == 0])
         res = 0
         while p:

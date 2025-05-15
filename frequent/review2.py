@@ -295,6 +295,26 @@ class Solution:
         nums[left] = povit
         return left
 
+    # 347. 前 K 个高频元素
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        max_num = 0
+        dic = collections.defaultdict(int)
+        for num in nums:
+            dic[num] += 1
+            max_num = max(max_num, dic[num])
+        bucket = [[] for _ in range(max_num + 1)]
+        for tic, num in dic.items():
+            bucket[num].append(tic)
+        res = []
+        for i in range(max_num, -1, -1):
+            l = bucket[i]
+            for n in l:
+                if k == 0:
+                    break
+                k -= 1
+                res.append(n)
+        return res
+
 
 
 if __name__ == '__main__':

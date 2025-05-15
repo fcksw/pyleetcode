@@ -72,11 +72,11 @@ class Solution:
     def maximumProfit(self, present: List[int], future: List[int], budget: int) -> int:
         m, n = len(present), budget + 1 #金额
         dp = [[0] * n for _ in range(m)]
-        for v in range(n + 1):
+        for v in range(n):
             if v >= present[0]:
                 dp[0][v] = max(0, future[0] - present[0])
         for i in range(m):
-            for j in range(n + 1):
+            for j in range(n):
                 if j < present[i]:
                     dp[i][j] = dp[i - 1][j]
                 else:
