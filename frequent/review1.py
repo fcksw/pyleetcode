@@ -117,6 +117,52 @@ class Solution:
         return res
 
 
+    def quickSort(self, nums: List[int]):
+        self.sortDfs(0, len(nums) - 1, nums)
+
+
+    def sortDfs(self, left, right, nums:List[int]):
+        if left < right:
+            position = self.sort(left, right, nums)
+            self.sortDfs(left, position - 1, nums)
+            self.sortDfs(position + 1, right, nums)
+
+
+    def sort(self, left, right, nums: List[int]) -> int:
+        pivot = nums[left]
+        while left < right:
+            while left < right and nums[right] >= pivot:
+                right -= 1
+            if left < right and nums[right] < pivot:
+                nums[left] = nums[right]
+                left += 1
+            while left < right and nums[left] <= pivot:
+                left += 1
+            if left < right and nums[left] > pivot:
+                nums[right] = nums[left]
+                right -= 1
+        nums[left] = pivot
+        return left
+
+    def searchRange(self, nums: List[int], target: int) -> List[int]:
+        left, right = 0, len(nums) - 1
+        if nums[right] < target or nums[left] > target:
+            return []
+        left_pos = self.searchOne(left, right, nums, target)
+        if left_pos > right or nums[left_pos] != target:
+            return []
+        right_pos = self.searchOne(left, right, nums, target + 1) - 1
+        return [left_pos, right_pos]
+
+
+    def searchOne(self, left, right, nums: List[int], target) -> int:
+        while left <= right:
+            mid = left + (right - left) // 2
+            if nums[mid] >= target:
+                right = mid - 1
+            else:
+                left = mid + 1
+        return left
 
 
 
