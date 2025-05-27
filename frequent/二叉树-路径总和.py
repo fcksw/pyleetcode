@@ -6,6 +6,12 @@ class TreeNode:
         self.left = left
         self.right = right
 
+class TreeIndex:
+    def __init__(self, index, node):
+        self.node = node
+        self.index = index
+
+
 class Solution:
     # 112. 路径总和
     def hasPathSum(self, root: Optional[TreeNode], targetSum: int) -> bool:
@@ -34,3 +40,26 @@ class Solution:
             path.pop()
         dfs(root, targetSum)
         return res
+
+
+    # 662. 二叉树最大宽度
+    def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        root_node = TreeIndex(1, root)
+        p = [root_node]
+        res = 0
+        while p:
+            res = max(p[len(p) - 1].index - p[0].index + 1, res)
+            tmp = p
+            p = []
+            while tmp:
+                first = tmp[0]
+                tmp = tmp[1:]
+                if first.node.left:
+                    u = TreeIndex(first.index * 2, first.node.left)
+                    p.append(u)
+                if first.node.right:
+                    u = TreeIndex(first.index * 2 + 1, first.node.right)
+                    p.append(u)
+        return res
+
+
