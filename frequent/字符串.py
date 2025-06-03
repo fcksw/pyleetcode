@@ -33,3 +33,13 @@ class Solution:
                 left += 1
         return res if res < n + 1 else 0
 
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        left, res = 0, 0
+        n = len(s)
+        dic = collections.defaultdict(int)
+        for right in range(n):
+            if s[right] in dic and dic[s[right]] >= left:
+                left = dic[s[right]] + 1
+            res = right - left + 1
+            dic[s[right]] = right
+        return res
