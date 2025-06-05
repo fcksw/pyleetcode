@@ -84,6 +84,21 @@ class Solution:
                 left += 1
         return min_len
 
+    #560. 和为 K 的子数组
+    def subarraySum(self, nums: List[int], k: int) -> int:
+        n = len(nums)
+        pre_sum = [] * (n + 1)
+        for i in range(n):
+            pre_sum[i + 1] = pre_sum[i] + nums[i]
+        dic = collections.defaultdict(int)
+        res = 0
+        for sj in pre_sum:
+            si = sj - k
+            if si in dic:
+                res += dic[si]
+            dic[sj] += 1
+        return res
+
 
 
 
