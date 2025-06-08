@@ -21,24 +21,23 @@ class Solution:
         [1,1,1,1,0]
         [1,0,1,1,0]
     """
-    def max_area(self, grip:List[List[int]]) -> int:
+    def maxArea(self, grip:List[List[int]]) -> int:
         m, n = len(grip), len(grip[0])
+        def dfs(i, j):
+            if i < 0 or i >= m or j < 0 or j >= n:
+                return 0
+            if grip[i][j] != 1:
+                return 0
+            grip[i][j] = 2
+            return dfs(i + 1, j) + dfs(i - 1, j) + dfs(i, j + 1) + dfs(i, j - 1) + 1
         res = 0
         for i in range(m):
             for j in range(n):
                 if grip[i][j] == 1:
-                    area = self.dfs(m, n, i, j, grip)
-                    res = max(res, area)
+                    area = dfs(i, j)
+                    res = max(area, res)
         return res
 
-
-    def dfs(self, m, n, i, j, grip):
-        if i >= n or i < 0 or j >= m or j < 0:
-            return 0
-        if grip[i][j] == 0 or grip[i][j] == 2:
-            return 0
-        grip[i][j] = 2
-        return self.dfs(m, n, i - 1, j ,grip) + self.dfs(m, n, i + 1, j ,grip) + self.dfs(m, n, i, j + 1 ,grip) + self.dfs(m, n, i, j - 1 ,grip) + 1
 
 
 
