@@ -1,11 +1,12 @@
-# 34. 在排序数组中查找元素的第一个和最后一个位置
-#[5,7,7,8,8,10], 8
+
 import collections
 from typing import List
 
 
 
 class Solution:
+    # 34. 在排序数组中查找元素的第一个和最后一个位置
+    # [5,7,7,8,8,10], 8
     def searchRange(self, nums: List[int], target: int) -> List[int]:
         if not nums:
             return [-1, -1]
