@@ -316,6 +316,26 @@ class Solution:
         return res
 
 
+    # 5. 最长回文子串
+    def longestPalindrome(self, s: str) -> str:
+        n = len(s)
+        dp = [[False] * n for _ in range(n)]
+        for i in range(n):
+            dp[i][i] = True
+        max_str = s[0]
+        for l in range(2, n + 1):
+            for i in range(n):
+                j = i + l - 1
+                if j >= n:
+                    continue
+                if l == 2:
+                    dp[i][j] = s[i] == s[j]
+                else:
+                    dp[i][j] = (s[i] == s[j]) and dp[i + 1][j - 1]
+                max_str = s[i:j + 1] if dp[i][j] else max_str
+        return max_str
+
+
 
 if __name__ == '__main__':
     print((0 + 4 + 6) // 10)

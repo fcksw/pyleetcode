@@ -1,4 +1,5 @@
 from typing import List
+from math import inf
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -39,6 +40,30 @@ class Solution:
         return res
 
 
+    # 判断一个二叉搜索树是否合法 未完全通过
+    def isTrueTreeNode(self, root: TreeNode):
+        def dfs(node: TreeNode) -> bool:
+            if not node :
+                return True
+            left = node.left
+            right = node.right
+            res = True
+            if left and left.val > node.val:
+                res = False
+            if right and right.val < node.val:
+                res = False
+            return dfs(node.left) and dfs(node.right) and res
+        return dfs(root)
+
+    # 判断一个二叉搜索树是否合法
+    def isTrueTreeNode1(self, root: TreeNode):
+        def dfs(node: TreeNode, max_inf, min_inf) -> bool:
+            if not node:
+                return True
+            if node.val >= max_inf or node.val <= min_inf:
+                return False
+            return dfs(node.left, node.val, min_inf) and dfs(node.right, max_inf, node.val)
+        return dfs(root, inf, -inf)
 
 
 
