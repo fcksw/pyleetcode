@@ -111,6 +111,7 @@ class Solution:
                 path.append(candidates[index])
                 dfs(index, remain - candidates[index])
                 path.pop()
+        dfs(0, target)
         return res
 
 
