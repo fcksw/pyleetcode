@@ -2,5 +2,3 @@
 .idea/
 # venv 虚拟环境
 .venv
-# pyenv python版本
-.python-version
